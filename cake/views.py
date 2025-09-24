@@ -6,10 +6,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import generics
 
 from .models import Ingredient, Cake, Order, CustomUser
-from .permissions import IsAdminOrReadOnly, IsOwnerOrAdmin,AdminRequiredPermission
-from .serializers import IngredientSerializer, CakeSerializer, OrderSerializer, RegisterSerializer, LoginSerializer,UserSerializer
+from .permissions import IsAdminOrReadOnly, IsOwnerOrAdmin, AdminRequiredPermission
+from .serializers import IngredientSerializer, CakeSerializer, OrderSerializer, RegisterSerializer, LoginSerializer, \
+    UserSerializer
 
 
 class CakeViewSet(viewsets.ModelViewSet):
@@ -79,9 +81,12 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
 
-class LoginView(APIView):
-    def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+
+class LoginView(generics.GenericAPIView):
+    serializer_class = LoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
@@ -103,7 +108,6 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AdminRequiredPermission]
-
 
 # {
 # "username":"admin",
