@@ -87,19 +87,8 @@ class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
     @swagger_auto_schema(
-        operation_description="Login with username and password",
         request_body=LoginSerializer,
-        responses={
-            200: openapi.Response(
-                description="Login successful",
-                examples={
-                    "application/json": {
-                        "access": "string",
-                        "refresh": "string"
-                    }
-                }
-            )
-        }
+        responses={200: LoginSerializer}
     )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
