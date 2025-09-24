@@ -3,10 +3,12 @@ from rest_framework import viewsets, permissions, generics, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.schemas import openapi
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
+from drf_yasg.utils import swagger_auto_schema
 
 from .models import Ingredient, Cake, Order, CustomUser
 from .permissions import IsAdminOrReadOnly, IsOwnerOrAdmin, AdminRequiredPermission
@@ -81,10 +83,13 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
 
-
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
 
+    @swagger_auto_schema(
+        request_body=LoginSerializer,
+        responses={200: openapi.Response("Login successful")}
+    )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
